@@ -2,16 +2,14 @@
 #include <string>
 using namespace std;
 
-enum TicketType 
+enum TicketType
 {
-    
     VIP = 3,
     FASTPASS = 2,
     REGULAR = 1
-
 };
 
-class Customer 
+class Customer
 {
 
 public:
@@ -21,93 +19,95 @@ public:
     int age;
     TicketType ticketType;
 
-    Customer() 
+    Customer()
     {
-
         id = 0;
         age = 0;
         ticketType = REGULAR;
-
     }
 
-    Customer(int i, string n, int a, TicketType t) 
+    Customer(int i, string n, int a, TicketType t)
     {
-
         id = i;
         name = n;
         age = a;
         ticketType = t;
-
     }
 
-    int getPriority() const 
+    int getPriority() const
     {
-
         return ticketType;
-
     }
 
-    void display() const 
+    void display() const
     {
-
         cout << "ID: " << id << " Name: " << name << " Age: " << age << " Ticket: ";
         if (ticketType == VIP) cout << "VIP";
         else if (ticketType == FASTPASS) cout << "FastPass";
         else cout << "Regular";
         cout << endl;
-
     }
-
 
 };
 
-struct Node 
+struct Node
 {
-
     Customer data;
     int priority;
     Node* next;
-
 };
 
-class PriorityQueue 
+class PriorityQueue
 {
 
     Node* front;
 
 public:
 
-    PriorityQueue() 
+    PriorityQueue()
     {
-
         front = NULL;
-
     }
 
-    bool isEmpty() 
+    ~PriorityQueue()
     {
+        while (front)
+        {
+            Node* temp = front;
+            front = front->next;
+            delete temp;
+        }
+    }
 
+    bool isEmpty()
+    {
         return front == NULL;
-
     }
 
-    void enqueue(Customer c) 
+    bool hasId(int id)
     {
+        Node* temp = front;
+        while (temp)
+        {
+            if (temp->data.id == id) return true;
+            temp = temp->next;
+        }
+        return false;
+    }
 
+    void enqueue(Customer c)
+    {
         Node* n = new Node;
         n->data = c;
         n->priority = c.getPriority();
         n->next = NULL;
 
-        if (!front || n->priority > front->priority) 
+        if (!front || n->priority > front->priority)
         {
-
             n->next = front;
             front = n;
             return;
-
         }
-
 
         Node* temp = front;
         while (temp->next && temp->next->priority >= n->priority)
@@ -115,110 +115,84 @@ public:
 
         n->next = temp->next;
         temp->next = n;
-
     }
 
-    Customer dequeue() 
+    Customer dequeue()
     {
-
         if (!front) return Customer();
         Node* temp = front;
         Customer c = temp->data;
         front = front->next;
         delete temp;
         return c;
-
     }
 
-    bool search(int id) 
+    bool search(int id)
     {
-
         Node* temp = front;
-        while (temp) 
+        while (temp)
         {
-
-            if (temp->data.id == id) 
+            if (temp->data.id == id)
             {
-
                 temp->data.display();
                 return true;
-
             }
-
             temp = temp->next;
-
         }
-
         return false;
-
     }
 
-    bool remove(int id) 
+    bool remove(int id)
     {
-
-        if (!front) 
+        if (!front)
             return false;
 
-        if (front->data.id == id) 
+        if (front->data.id == id)
         {
-
             Node* temp = front;
             front = front->next;
             delete temp;
             return true;
-
         }
 
         Node* prev = front;
         Node* cur = front->next;
 
-        while (cur) 
+        while (cur)
         {
-
-            if (cur->data.id == id) 
+            if (cur->data.id == id)
             {
-
                 prev->next = cur->next;
                 delete cur;
                 return true;
-
             }
-
             prev = cur;
             cur = cur->next;
-
         }
 
         return false;
-
     }
 
-    void display() 
+    void display()
     {
-
         Node* temp = front;
 
-        if (!temp) 
+        if (!temp)
         {
-
             cout << "No customers\n";
             return;
-
         }
 
-        while (temp) 
+        while (temp)
         {
-
             temp->data.display();
             temp = temp->next;
-
         }
-
     }
 
 };
 
-void ferrisWheelSimulation(PriorityQueue& q) 
+void ferrisWheelSimulation(PriorityQueue& q)
 {
 
     Customer wheel[6];
@@ -226,7 +200,7 @@ void ferrisWheelSimulation(PriorityQueue& q)
 
     cout << "\nFerris Wheel Simulation\n";
 
-    while (!q.isEmpty()) 
+    while (!q.isEmpty())
     {
 
         for (int i = 5; i > 0; i--)
@@ -250,7 +224,7 @@ void ferrisWheelSimulation(PriorityQueue& q)
 
     }
 
-    while (true) 
+    while (true)
     {
 
         bool any = false;
@@ -280,7 +254,7 @@ void ferrisWheelSimulation(PriorityQueue& q)
 
 }
 
-void merryGoRoundSimulation(PriorityQueue& q) 
+void merryGoRoundSimulation(PriorityQueue& q)
 {
 
     Customer seats[12];
@@ -288,7 +262,7 @@ void merryGoRoundSimulation(PriorityQueue& q)
 
     cout << "\nMerry Go Round Simulation\n";
 
-    while (!q.isEmpty()) 
+    while (!q.isEmpty())
     {
 
         for (int i = 11; i > 0; i--)
@@ -310,7 +284,7 @@ void merryGoRoundSimulation(PriorityQueue& q)
 
     }
 
-    while (true) 
+    while (true)
     {
 
         bool any = false;
@@ -338,7 +312,7 @@ void merryGoRoundSimulation(PriorityQueue& q)
 
 }
 
-void rollerCoasterSimulation(PriorityQueue& q) 
+void rollerCoasterSimulation(PriorityQueue& q)
 {
 
     Customer cars[6];
@@ -346,7 +320,7 @@ void rollerCoasterSimulation(PriorityQueue& q)
 
     cout << "\nRoller Coaster Simulation\n";
 
-    while (!q.isEmpty()) 
+    while (!q.isEmpty())
     {
 
         for (int i = 5; i > 0; i--)
@@ -366,7 +340,7 @@ void rollerCoasterSimulation(PriorityQueue& q)
 
     }
 
-    while (true) 
+    while (true)
     {
 
         bool any = false;
@@ -390,7 +364,7 @@ void rollerCoasterSimulation(PriorityQueue& q)
 
 }
 
-void dropTowerSimulation(PriorityQueue& q) 
+void dropTowerSimulation(PriorityQueue& q)
 {
 
     const int N = 5;
@@ -405,17 +379,20 @@ void dropTowerSimulation(PriorityQueue& q)
     cout << "\nDrop Tower Simulation\n";
 
     int riders = 0;
-    while (!q.isEmpty() && riders < N - 1) 
+    while (!q.isEmpty() && riders < N)
     {
-
         tower[riders] = q.dequeue();
         riders++;
-
     }
 
-    int position = 0;  
+    if (!q.isEmpty())
+    {
+        cout << "Drop Tower is full (" << N << " riders). Remaining customers stay in the queue for the next run." << endl;
+    }
 
-    for (int i = N - 1; i >= 0; i--) 
+    int position = 0;
+
+    for (int i = N - 1; i >= 0; i--)
     {
 
         cout << "| ";
@@ -434,12 +411,12 @@ void dropTowerSimulation(PriorityQueue& q)
     cin >> pause;
     system("cls");
 
-    while (position + riders < N) 
+    while (position + riders < N)
     {
 
         position++;
 
-        for (int i = N - 1; i >= 0; i--) 
+        for (int i = N - 1; i >= 0; i--)
         {
 
             cout << "| ";
@@ -461,7 +438,7 @@ void dropTowerSimulation(PriorityQueue& q)
     }
 
     cout << "Reached Top...\n";
-    for (int i = N - 1; i >= 0; i--) 
+    for (int i = N - 1; i >= 0; i--)
     {
 
         cout << "| ";
@@ -480,12 +457,12 @@ void dropTowerSimulation(PriorityQueue& q)
     cin >> pause;
     system("cls");
 
-    while (position > 0) 
+    while (position > 0)
     {
 
         position--;
 
-        for (int i = N - 1; i >= 0; i--) 
+        for (int i = N - 1; i >= 0; i--)
         {
 
             cout << "| ";
@@ -509,13 +486,13 @@ void dropTowerSimulation(PriorityQueue& q)
 }
 
 
-int main() 
+int main()
 {
 
     PriorityQueue ferris, merry, roller, drop;
     int choice;
 
-    do 
+    do
     {
 
 
@@ -526,25 +503,58 @@ int main()
         cin >> choice;
 
 
-        if (choice == 1) 
+        if (choice == 1)
         {
 
 
             int id, age, t, r;
             string name;
 
+            do
+            {
+                cout << "Customer ID (must be a positive number, not already in use): ";
+                cin >> id;
 
-            cout << "Customer ID: ";
-            cin >> id;
+                if (id <= 0)
+                {
+                    cout << "ID must be greater than zero." << endl;
+                    continue;
+                }
+                if (ferris.hasId(id) || merry.hasId(id) || roller.hasId(id) || drop.hasId(id))
+                {
+                    cout << "That ID is already in use by another customer in a queue." << endl;
+                    id = -1; 
+                }
+
+            } while (id <= 0);
+
             cout << "Name: ";
             cin.ignore();
             getline(cin, name);
-            cout << "Age: ";
-            cin >> age;
-            cout << "Ticket 1 VIP 2 FastPass 3 Regular: ";
-            cin >> t;
-            cout << "Ride 1 Ferris 2 Merry 3 Roller 4 DropTower: ";
-            cin >> r;
+
+            do
+            {
+                cout << "Age: ";
+                cin >> age;
+                if (age <= 0 || age > 120)
+                    cout << "Enter a realistic age between 1 and 120." << endl;
+            } while (age <= 0 || age > 120);
+
+            do
+            {
+                cout << "Ticket 1 Regular 2 FastPass 3 VIP: ";
+                cin >> t;
+                if (t < 1 || t > 3)
+                    cout << "Enter 1, 2, or 3." << endl;
+            } while (t < 1 || t > 3);
+
+            do
+            {
+                cout << "Ride 1 Ferris 2 Merry 3 Roller 4 DropTower: ";
+                cin >> r;
+                if (r < 1 || r > 4)
+                    cout << "Enter a number from 1 to 4." << endl;
+            } while (r < 1 || r > 4);
 
 
             Customer c(id, name, age, (TicketType)t);
@@ -556,12 +566,17 @@ int main()
 
         }
 
-        else if (choice == 2) 
+        else if (choice == 2)
         {
 
             int r;
-            cout << "Ride 1 Ferris 2 Merry 3 Roller 4 DropTower: ";
-            cin >> r;
+            do
+            {
+                cout << "Ride 1 Ferris 2 Merry 3 Roller 4 DropTower: ";
+                cin >> r;
+                if (r < 1 || r > 4)
+                    cout << "Enter a number from 1 to 4." << endl;
+            } while (r < 1 || r > 4);
 
             if (r == 1) ferrisWheelSimulation(ferris);
             else if (r == 2) merryGoRoundSimulation(merry);
@@ -570,7 +585,7 @@ int main()
 
         }
 
-        else if (choice == 3) 
+        else if (choice == 3)
         {
 
             int id;
@@ -582,7 +597,7 @@ int main()
 
         }
 
-        else if (choice == 4) 
+        else if (choice == 4)
         {
 
             int id;
@@ -596,7 +611,7 @@ int main()
 
         }
 
-        else if (choice == 5) 
+        else if (choice == 5)
         {
 
             cout << "\nFerris\n"; ferris.display();
